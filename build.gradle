@@ -482,6 +482,10 @@ bootJar {
   }
 }
 
+jar {
+  enabled true
+}
+
 configurations {
   runtime.exclude group: "com.thoughtworks.xstream", module: "xstream"
 }
