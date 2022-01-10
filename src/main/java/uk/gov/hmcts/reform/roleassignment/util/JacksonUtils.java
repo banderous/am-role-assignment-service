@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -62,7 +63,7 @@ public class JacksonUtils {
         .configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true)
         .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
-        .build();
+        .build().registerModule(new JavaTimeModule());
 
     public static final CollectionType listType = MAPPER.getTypeFactory().constructCollectionType(
         ArrayList.class,
