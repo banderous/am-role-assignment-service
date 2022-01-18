@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.roleassignment.auditlog;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,7 @@ class AuditServiceTest {
     public static final String CORRELATION_ID = "CORRELATION-1";
     public static final String REQUEST_PAYLOAD = "PAYLOAD-1";
 
+
     @Mock
     private SecurityUtils securityUtils;
 
@@ -90,6 +92,7 @@ class AuditServiceTest {
             .roleName(ROLE_NAME)
             .correlationId(CORRELATION_ID)
             .requestPayload(REQUEST_PAYLOAD)
+            .assignmentSize(1)
             .build();
         AuditContext auditContextSpy = Mockito.spy(auditContext);
         auditService.audit(auditContextSpy);
@@ -115,7 +118,7 @@ class AuditServiceTest {
         assertThat(entry.getInvokingService(), is(equalTo((SERVICE_NAME))));
         assertThat(entry.getOperationType(), is(equalTo(AuditOperationType.CREATE_ASSIGNMENTS.getLabel())));
         assertThat(entry.getRequestPayload(), is(equalTo(auditContextSpy.getRequestPayload())));
-
+        assertThat(entry.getAssignmentSize(), is(equalTo(1)));
     }
 
     @Test
@@ -131,6 +134,6 @@ class AuditServiceTest {
         verify(auditRepository).save(captor.capture());
 
         assertThat(captor.getValue().getHttpStatus(), is(equalTo(403)));
-        assertThat(captor.getValue().getOperationType(), is(equalTo(null)));
+        Assert.assertNull(captor.getValue().getOperationType());
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.roleassignment.oidc;
 
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.OAuth2Configuration;
 import uk.gov.hmcts.reform.idam.client.models.TokenResponse;
@@ -154,6 +156,12 @@ class IdamRepositoryTest {
         verify(caffeineCacheMock, times(0)).getNativeCache();
         verify(cache, times(0)).estimatedSize();
 
+    }
+
+    @Test
+    void getUserInfo_HandleHttpResponse() {
+        FeignException.Unauthorized exception = mock(FeignException.Unauthorized.class);
+        when(idamApi.retrieveUserInfo(null)).thenThrow(exception);
     }
 
     @Test
@@ -322,7 +330,6 @@ class IdamRepositoryTest {
         assertNotNull(actualResponse);
         assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 
-
     }
 
     @Test
@@ -352,5 +359,37 @@ class IdamRepositoryTest {
         ResponseEntity<List<Object>> actualResponse = idamRepository.searchUserByUserId(token, userId);
         assertNull(actualResponse);
 
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getUserInfoException() {
+        UserInfo userInfo = mock(UserInfo.class);
+        CaffeineCache caffeineCacheMock = mock(CaffeineCache.class);
+        com.github.benmanes.caffeine.cache.Cache cache = mock(com.github.benmanes.caffeine.cache.Cache.class);
+
+        when(idamApi.retrieveUserInfo(anyString())).thenReturn(userInfo);
+        when(cacheManager.getCache(anyString())).thenReturn(caffeineCacheMock);
+        when(caffeineCacheMock.getNativeCache()).thenReturn(cache);
+        FeignException.Unauthorized unauthorized = mock(FeignException.Unauthorized.class);
+        when(idamRepository.getUserInfo("invalid token")).thenThrow(unauthorized);
+
+        assertThrows(ResponseStatusException.class, () -> idamRepository.getUserInfo("invalid token"));
+    }
+
+    @Test
+    void getUserByUserIdException() {
+        FeignException.Unauthorized unauthorized = mock(FeignException.Unauthorized.class);
+        when(idamApi.getUserByUserId(any(), any())).thenThrow(unauthorized);
+
+        assertThrows(
+            ResponseStatusException.class,
+            () -> idamRepository.getUserByUserId("invalid token", "testuserid")
+        );
+    }
+
+    @Test
+    void getHttpHeaders() {
+        assertThrows(NullPointerException.class, () -> idamRepository.searchUserByUserId(null, null));
     }
 }
