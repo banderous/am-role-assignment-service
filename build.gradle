@@ -1,6 +1,6 @@
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
     }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.12")
@@ -37,7 +37,7 @@ def versions = [
   lombok         : '1.18.12',
   gradlePitest   : '1.3.0',
   pitest         : '1.4.2',
-  reformLogging  : '5.1.1',
+  reformLogging  : '6.0.0',
   reformS2sClient: '3.1.2',
   serenity       : '2.2.12',
   sonarPitest    : '0.5',
@@ -305,12 +305,10 @@ dependencyUpdates.resolutionStrategy = {
 
 repositories {
   mavenLocal()
-  jcenter()
   mavenCentral()
   maven {
     url 'https://jitpack.io'
   }
-  maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
 }
 
 
@@ -322,7 +320,7 @@ dependencies {
   compile(group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot)
   compile(group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot)
   compile(group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot)
-  implementation (group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0') {
+  implementation (group: 'com.github.hmcts', name: 'properties-volume-spring-boot-starter', version: '0.1.0') {
     exclude group: 'org.glassfish', module: 'jakarta.el'
   }
   implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.5.1'
@@ -355,15 +353,15 @@ dependencies {
   compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot)
 
   //Added for S2S and User Authentication
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.reformS2sClient
+  compile group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.reformS2sClient
   compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.swagger2Version
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.swagger2Version
   compile group: 'io.springfox', name: 'springfox-spring-webmvc', version: versions.swagger2Version
 
-  compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
+  compile group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+  compile group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.5.RELEASE'
   implementation('org.springframework.boot:spring-boot-starter-hateoas') {
     exclude group: 'org.glassfish', module: 'jakarta.el'
@@ -384,7 +382,7 @@ dependencies {
   implementation "org.springframework.security:spring-security-web"
   implementation "org.springframework.security:spring-security-config"
   implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-  implementation 'uk.gov.hmcts.reform:idam-client:v1.5.4'
+  implementation 'com.github.hmcts:idam-java-client:1.5.5'
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.19'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
   implementation 'commons-io:commons-io:2.8.0'
